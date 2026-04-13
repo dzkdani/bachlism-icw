@@ -166,6 +166,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.4
   androidMinAspectRatio: 1
   applicationIdentifier:
+    Android: com.sitested.bachlism
     Standalone: com.DefaultCompany.2D-URP
   buildNumber:
     Standalone: 0
@@ -796,7 +797,7 @@ PlayerSettings:
   qnxGraphicConfPath: 
   apiCompatibilityLevel: 6
   captureStartupLogs: {}
-  activeInputHandler: 1
+  activeInputHandler: 2
   windowsGamepadBackendHint: 0
   cloudProjectId: 6b126bfb-2040-4e76-963e-69c8e021fb6f
   framebufferDepthMemorylessMode: 0

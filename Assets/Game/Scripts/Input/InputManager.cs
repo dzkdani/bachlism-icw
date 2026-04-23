@@ -1,5 +1,8 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour
 {
@@ -9,27 +12,26 @@ public class InputManager : MonoBehaviour
 
     [Header("Drag Settings")]
     [SerializeField] private Canvas canvas;
-    [SerializeField] private float canvasMiddleXOffset = 40f; // Offset from middle to create a dead zone 
+    [SerializeField] private GraphicRaycaster graphicRaycaster;
+    [SerializeField] private float canvasMiddleXOffset = 40f; // Offset from middle to create a dead zone
     [SerializeField] private float dropOffset = 20f; // Minimum distance from middle to count as a drop
-    
-    private Vector2 dragStartPos;
+
     private Vector2 currentDragPos;
     private bool isDragging;
+    private InputHandler activeHandler;
     private DropZone currentZone = DropZone.None;
 
     // Canvas zones
-    private float canvasWidth;
-    private float canvasMiddleX;
-    private float leftZoneStart;
     private float leftZoneEnd;
     private float rightZoneStart;
-    private float rightZoneEnd;
 
-    // Events for drag and drop
-    public event Action<Vector2> OnDragStarted;
-    public event Action<Vector2, DropZone> OnDragging;
-    public event Action<DropZone> OnDropped;
-    public event Action OnDragCancelled;
+    private readonly List<RaycastResult> raycastResults = new List<RaycastResult>(16);
+
+
+    public event Action<InputHandler> OnActiveDragStarted;
+    public event Action<InputHandler, Vector2, DropZone> OnActiveDragging;
+    public event Action<InputHandler, DropZone> OnActiveDropped;
+    public event Action<InputHandler> OnActiveDragCancelled;
 
     private void Awake()
     {
@@ -38,6 +40,7 @@ public class InputManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
     }
 
@@ -45,9 +48,11 @@ public class InputManager : MonoBehaviour
     {
         // Find canvas if not assigned
         if (canvas == null)
-        {
             canvas = FindAnyObjectByType<Canvas>();
-        }
+
+        if (graphicRaycaster == null && canvas != null)
+            graphicRaycaster = canvas.GetComponent<GraphicRaycaster>();
+
         CalculateCanvasZones();
     }
 
@@ -56,21 +61,8 @@ public class InputManager : MonoBehaviour
         if (canvas == null)
             return;
 
-        RectTransform canvasRect = canvas.GetComponent<RectTransform>();
-        canvasWidth = canvasRect.rect.width;
-        canvasMiddleX = canvasWidth / 2f;
-
-        // Left half: from left edge to middle
-        leftZoneStart = -canvasWidth / 2f;
-        leftZoneEnd = 0f - canvasMiddleXOffset;
-
-        // Right half: from middle to right edge
-        rightZoneStart = 0f + canvasMiddleXOffset;
-        rightZoneEnd = canvasWidth / 2f;
-
-        Debug.Log($"Canvas Width: {canvasWidth}, Middle: {canvasMiddleX}");
-        Debug.Log($"Left Zone: {leftZoneStart} to {leftZoneEnd}");
-        Debug.Log($"Right Zone: {rightZoneStart} to {rightZoneEnd}");
+        leftZoneEnd = -canvasMiddleXOffset;
+        rightZoneStart = canvasMiddleXOffset;
     }
 
     private void Update()
@@ -108,7 +100,7 @@ public class InputManager : MonoBehaviour
     }
     #endregion
 
-    #region  Mouse Input (for testing)
+    #region Mouse Input (for testing)
     private void HandleMouseInput()
     {
         if (Input.touchCount > 0)
@@ -131,18 +123,25 @@ public class InputManager : MonoBehaviour
 
     private void StartDrag(Vector2 screenPos)
     {
-        dragStartPos = screenPos;
+        if (isDragging || canvas == null || graphicRaycaster == null || EventSystem.current == null)
+            return;
+
+        InputHandler handler = FindHandlerUnderPointer(screenPos);
+        if (handler == null)
+            return;
+
+        activeHandler = handler;
         currentDragPos = screenPos;
         isDragging = true;
         currentZone = DropZone.None;
 
-        OnDragStarted?.Invoke(dragStartPos);
-        Debug.Log($"Drag started at: {dragStartPos}");
+        activeHandler.BeginDrag(screenPos);
+        OnActiveDragStarted?.Invoke(activeHandler);
     }
 
     private void UpdateDrag(Vector2 screenPos)
     {
-        if (!isDragging)
+        if (!isDragging || activeHandler == null || canvas == null)
             return;
 
         currentDragPos = screenPos;
@@ -151,19 +150,14 @@ public class InputManager : MonoBehaviour
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             canvas.GetComponent<RectTransform>(),
             screenPos,
-            null,
+            UICamera,
             out Vector2 localPos
         );
 
-        // Determine which zone we're in
-        DropZone newZone = DetermineZone(localPos.x);
-        if (newZone != currentZone)
-        {
-            currentZone = newZone;
-            Debug.Log($"Zone changed to: {currentZone}");
-        }
+        currentZone = DetermineZone(localPos.x);
 
-        OnDragging?.Invoke(currentDragPos, currentZone);
+        activeHandler.UpdateDrag(currentDragPos, currentZone);
+        OnActiveDragging?.Invoke(activeHandler, currentDragPos, currentZone);
     }
 
     private void EndDrag()
@@ -171,11 +165,18 @@ public class InputManager : MonoBehaviour
         if (!isDragging)
             return;
 
+        InputHandler droppedHandler = activeHandler;
+        DropZone droppedZone = currentZone;
+
         isDragging = false;
-        Debug.Log($"Dropped in zone: {currentZone}");
-        
-        OnDropped?.Invoke(currentZone);
+        activeHandler = null;
         currentZone = DropZone.None;
+
+        if (droppedHandler == null)
+            return;
+
+        droppedHandler.EndDrag(droppedZone);
+        OnActiveDropped?.Invoke(droppedHandler, droppedZone);
     }
 
     private void CancelDrag()
@@ -183,18 +184,50 @@ public class InputManager : MonoBehaviour
         if (!isDragging)
             return;
 
+        InputHandler cancelledHandler = activeHandler;
+
         isDragging = false;
+        activeHandler = null;
         currentZone = DropZone.None;
-        OnDragCancelled?.Invoke();
+
+        if (cancelledHandler == null)
+            return;
+
+        cancelledHandler.CancelDrag();
+        OnActiveDragCancelled?.Invoke(cancelledHandler);
+    }
+
+    private InputHandler FindHandlerUnderPointer(Vector2 screenPos)
+    {
+        raycastResults.Clear();
+
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current)
+        {
+            position = screenPos
+        };
+
+        graphicRaycaster.Raycast(pointerEventData, raycastResults);
+
+        foreach (RaycastResult result in raycastResults)
+        {
+            InputHandler handler = result.gameObject.GetComponentInParent<InputHandler>();
+            if (handler != null && handler.isActiveAndEnabled)
+            {
+                return handler;
+            }
+        }
+
+        return null;
     }
 
     private DropZone DetermineZone(float xPosition)
     {
-        if (xPosition < leftZoneEnd - dropOffset) //(xPosition >= leftZoneStart && xPosition < leftZoneEnd)
+        if (xPosition < leftZoneEnd - dropOffset)
         {
             return DropZone.Left;
         }
-        else if (xPosition > rightZoneStart + dropOffset) //(xPosition >= rightZoneStart && xPosition <= rightZoneEnd)
+
+        if (xPosition > rightZoneStart + dropOffset)
         {
             return DropZone.Right;
         }
@@ -203,5 +236,17 @@ public class InputManager : MonoBehaviour
     }
 
     public bool IsDragging => isDragging;
+    public InputHandler ActiveHandler => activeHandler;
     public DropZone CurrentZone => currentZone;
+    public Canvas ActiveCanvas => canvas;
+
+    private Camera UICamera
+    {
+        get
+        {
+            if (canvas == null || canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+                return null;
+            return canvas.worldCamera;
+        }
+    }
 }

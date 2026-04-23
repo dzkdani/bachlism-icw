@@ -1,26 +1,31 @@
 using UnityEngine;
 
+public enum Stat { environment, economy, trust, corruption }
+
 [CreateAssetMenu(fileName = "CardData", menuName = "Data/Card")]
 public class CardData : ScriptableObject
 {
-    public string id;
+    public string id; 
+    public int weight;
+    public string title;
+    [TextArea(3, 10)]
     public string desc;
-
-    public Choice leftChoice;
-    public Choice rightChoice;
-
+    public Decision left;
+    public Decision right;
 }
 
 [System.Serializable]
-public class Choice
+public struct Decision
 {
+    [TextArea(3, 10)]
     public string desc;
-    public Effect[] effect;
+    public Effect[] effects;
 }
 
 [System.Serializable]
-public class Effect
+public struct Effect
 {
-    public StatType stat;
-    public float amount;
+    public Stat stat;
+    public float amount; 
 }
+

@@ -6,35 +6,36 @@ using System;
 using NaughtyAttributes;
 using UnityEngine.Events;
 
-public class DeckManager : MonoBehaviour
+public class CardManager : MonoBehaviour
 {
     [SerializeField] private GameObject cardPrefab;
-    [SerializeField] private Transform deckTarget; // The deck center location
+    [SerializeField] private Transform deckTarget;
     [SerializeField] private float cardAnimationDuration = 0.5f;
     [SerializeField] private float delayBetweenCards = 0.1f;
     [SerializeField] private int deployedCardCount = 17;
+
+    private List<GameObject> deployedCards = new List<GameObject>();
     
     public List<CardData> deck;
-    
-    private List<GameObject> deployedCards = new List<GameObject>();
 
-    /// <summary>
-    /// Event invoked when all cards have been deployed to the deck.
-    /// </summary>
     public event Action OnAllCardsDeployedEvent;
-    public UnityEvent OnAllCardsDeployedUnityEvent; 
-    void Start()
+
+    void OnEnable()
     {
-        OnAllCardsDeployedEvent += () => Debug.Log("All cards deployed to deck!"); // Example listener
-        OnAllCardsDeployedUnityEvent.AddListener(() => Debug.Log("All cards deployed to deck!")); // Example listener
+        InputManager.Instance.OnActiveDropped += OnDecisionMade;
     }
 
-    [Button("Deploy Cards To Deck")]
-    public void DeployCardsToDeck()
+    void OnDisable()
+    {
+        InputManager.Instance.OnActiveDropped -= OnDecisionMade;
+    }
+
+    [Button("Deploy Cards")]
+    public void DeployCards()
     {
         deployedCards.Clear();
         
-        // Spawn and animate 17 cards
+        // Spawn and animate cards
         for (int i = 0; i < deployedCardCount; i++)
         {
             GameObject cardInstance = ObjectPool.Get(cardPrefab, deckTarget);
@@ -59,21 +60,39 @@ public class DeckManager : MonoBehaviour
                 cardSequence.OnComplete(() =>
                 {
                     // Return all cards to pool except the last one
-                    for (int j = 0; j < deployedCards.Count - 1; j++)
+                    for (int j = 0; j < deployedCards.Count - 2; j++)
                     {
                         ObjectPool.Return(deployedCards[j]);
                     }
                     
-                    // Invoke event for all listeners
+                    // Invoke event for all listeners that cards are deployed and ready
                     OnAllCardsDeployedEvent?.Invoke();
-                    OnAllCardsDeployedUnityEvent?.Invoke();
                 });
             }
         }
     }
 
-    public CardData DrawNextCard()
+    public void OnDecisionMade(InputHandler dropObj, InputManager.DropZone dropZone)
     {
-        return deck[UnityEngine.Random.Range(0, deck.Count)]; // Placeholder for drawing a random card from the deck
+        if (dropZone == InputManager.DropZone.None)
+            return;
+
+        CardInfo card = dropObj.GetComponent<CardInfo>();
+        if (card == null)
+            return;
+        
+        if (dropZone == InputManager.DropZone.Left)
+            GameController.Instance.OnApplyResult(card.Left);
+        else if (dropZone == InputManager.DropZone.Right)
+            GameController.Instance.OnApplyResult(card.Right);
+
+        GenerateNextCard();
+    }
+
+    private void GenerateNextCard()
+    {
+        GameObject cardInstance = ObjectPool.Get(cardPrefab, deckTarget);
+        cardInstance.transform.localScale = Vector3.one;
+        cardInstance.transform.position = deckTarget.position;
     }
 }

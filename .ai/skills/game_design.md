@@ -30,7 +30,7 @@ Inspired by:
 - draw card
 - make choice
 - resolve choice
-- update stats
+- update stats 
 - repeat
 
 ## Ending

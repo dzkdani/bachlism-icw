@@ -7,6 +7,7 @@ public class StatSystem
     public float Economy = 0f;
     public float Trust = 0f;
     public float Corruption = 0f;
+    public int Turn = 0;
 
     public event Action OnStatsChanged;
 
@@ -41,11 +42,16 @@ public class StatSystem
 
     public bool IsLose()
     {
-        return false; // Placeholder for game over condition logic, e.g., any stat reaching 0 or 100
+        if (Corruption >= 100) return true;
+        if (Trust <= 0) return true;
+        if (Environment <= 0) return true;
+        if (Economy <= 0) return true;
+        else return false;
     }
 
     public bool IsWin()
     {
-        return true; // Placeholder for win condition logic, e.g., reaching certain thresholds
+        if (Turn >= GameController.Instance.TargetTurn) return true;
+        else return false;
     }
 }

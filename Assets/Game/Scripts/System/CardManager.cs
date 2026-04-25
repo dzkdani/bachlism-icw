@@ -15,9 +15,7 @@ public class CardManager : MonoBehaviour
     [SerializeField] private int deployedCardCount = 17;
 
     private List<GameObject> deployedCards = new List<GameObject>();
-    
-    public List<CardData> deck;
-
+    public CardDatabase cardDatabase;
     public event Action OnAllCardsDeployedEvent;
 
     void OnEnable()

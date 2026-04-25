@@ -13,6 +13,10 @@ public enum GameState
 public class GameController : MonoBehaviour
 {
     public static GameController Instance { get; private set; }
+    private int currentTurn = 0;
+    [SerializeField] private int targetTurn = 100;
+    public int TargetTurn => targetTurn;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -31,8 +35,11 @@ public class GameController : MonoBehaviour
     private StatSystem stat;
     public GameState CurrentState => currentState;
 
+
     void Start()
     {
+        stat.OnStatsChanged += EvaluateGameState; 
+
         stat = new StatSystem();
         OnStartGame();       
     }
@@ -64,8 +71,12 @@ public class GameController : MonoBehaviour
 
     public void OnNewGame()
     {
+        stat.OnStatsChanged -= EvaluateGameState;
+        stat = new StatSystem();
+        stat.OnStatsChanged += EvaluateGameState;
+
+        currentTurn = 0;
         currentState = GameState.Start;
-        stat = new StatSystem(); // Reset stats for new game
     }
 
     public void OnStartGame()
@@ -81,9 +92,11 @@ public class GameController : MonoBehaviour
     public void OnApplyResult(Decision choice)
     {
         currentState = GameState.ApplyResult;
-        choice.Resolve(stat); 
 
-        stat.OnStatsChanged += OnCheckGameOver; // Subscribe to stat changes to check for game over conditions
+        choice.Resolve(stat);
+        currentTurn++;
+
+        EvaluateGameState();
     }
 
     public void OnDrawCard()
@@ -92,22 +105,22 @@ public class GameController : MonoBehaviour
         // Logic to draw a card and present it to the player would go here
     }
 
-    public void OnCheckGameOver()
+    public void EvaluateGameState()
     {
         currentState = GameState.CheckGameOver;
+
         if (stat.IsLose())
         {
             Debug.Log("Game Over!");
             currentState = GameState.End;
         }
-        else if (stat.IsWin())
+        else if (currentTurn >= targetTurn)
         {
-            Debug.Log("You Win!");
+            Debug.Log("You Survived 100 Turns! You Win!");
             currentState = GameState.End;
         }
         else
         {
-            // If not game over, start next turn
             OnDrawCard();
         }
     }

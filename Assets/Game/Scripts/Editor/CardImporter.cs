@@ -36,6 +36,10 @@ public static class CardImporter
 
             var cols = ParseCsvLine(line);
 
+            Debug.Log($"Line count: {lines.Length}");
+            Debug.Log($"Raw line: [{line}]");
+            Debug.Log($"Cols count: {cols.Length}");    
+
             if (cols.Length != ExpectedColumnCount)
             {
                 Debug.LogError($"Row {rowNumber}: Expected {ExpectedColumnCount} columns, got {cols.Length}. Skipping.");
@@ -216,11 +220,20 @@ public static class CardImporter
 
             if (c == '"')
             {
-                inQuotes = !inQuotes;
+                // escaped quote ("")
+                if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
+                {
+                    current.Append('"');
+                    i++;
+                }
+                else
+                {
+                    inQuotes = !inQuotes;
+                }
             }
-            else if (c == ',' && !inQuotes)
+            else if ((c == ',' || c == '，') && !inQuotes)
             {
-                columns.Add(current.ToString());
+                columns.Add(current.ToString().Trim());
                 current.Clear();
             }
             else
@@ -229,7 +242,8 @@ public static class CardImporter
             }
         }
 
-        columns.Add(current.ToString());
+        columns.Add(current.ToString().Trim());
+
         return columns.ToArray();
     }
 }

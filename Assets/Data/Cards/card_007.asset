@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f252fa7bfd141b4d82df563bd42ae5b, type: 3}
+  m_Name: card_007
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: card_007
+  weight: 15
+  isCritical: 1
+  category: trust
+  title: Military Draft
+  desc: War is coming. Should we enforce military conscription?
+  left:
+    desc: Enforce draft
+    effects:
+    - stat: 2
+      amount: -20
+    - stat: 1
+      amount: 10
+  right:
+    desc: Use volunteers
+    effects:
+    - stat: 2
+      amount: 5
+    - stat: 1
+      amount: -10

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f252fa7bfd141b4d82df563bd42ae5b, type: 3}
+  m_Name: card_009
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: card_009
+  weight: 5
+  isCritical: 0
+  category: economy
+  title: Lower Market Tax
+  desc: Merchants ask for reduced taxes.
+  left:
+    desc: Lower taxes
+    effects:
+    - stat: 1
+      amount: -10
+    - stat: 2
+      amount: 10
+  right:
+    desc: Maintain rates
+    effects:
+    - stat: 1
+      amount: 5
+    - stat: 2
+      amount: -5

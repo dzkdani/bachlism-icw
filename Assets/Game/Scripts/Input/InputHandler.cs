@@ -25,7 +25,6 @@ public class InputHandler : MonoBehaviour
     private void OnEnable()
     {
         KillTweens();
-        ResetCG();
     }
 
     private void OnDisable()
@@ -139,7 +138,6 @@ public class InputHandler : MonoBehaviour
         sequence.OnComplete(() =>
         {
             ResetCardVisualState();
-            ObjectPool.Return(gameObject);
         });
 
         return sequence;

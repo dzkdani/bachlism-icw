@@ -1,0 +1,11 @@
+id,weight,isCritical,category,title,desc,leftDesc,leftEffects,rightDesc,rightEffects
+card_001,10,false,economy,Raise Taxes,The treasury is running low. Should we increase taxes?,Raise taxes,economy:15;trust:-10,Keep taxes low,economy:-10;trust:5
+card_002,8,false,environment,Build Factory,A corporation wants to build a factory near the forest.,Approve factory,economy:20;environment:-15;corruption:5,Reject proposal,environment:10;economy:-10
+card_003,12,true,trust,Public Festival,Citizens request funding for a city-wide festival.,Fund it,trust:20;economy:-10,Decline,economy:5;trust:-15
+card_004,6,false,corruption,Bribe Offer,A noble offers gold for political favors.,Accept bribe,economy:15;corruption:20;trust:-20,Refuse,trust:10;corruption:-10
+card_005,9,false,environment,Forest Protection,Should we designate a forest as protected land?,Protect it,environment:20;economy:-10,Allow logging,economy:15;environment:-20
+card_006,7,false,economy,Trade Agreement,A neighboring kingdom proposes a trade agreement.,Sign deal,economy:15;trust:5,Reject deal,economy:-5;trust:-10
+card_007,15,true,trust,Military Draft,War is coming. Should we enforce military conscription?,Enforce draft,trust:-20;economy:10,Use volunteers,trust:5;economy:-10
+card_008,11,false,corruption,Investigate Officials,Rumors spread of corruption in government.,Launch investigation,trust:15;corruption:-20,Ignore rumors,trust:-15;corruption:10
+card_009,5,false,economy,Lower Market Tax,Merchants ask for reduced taxes.,Lower taxes,economy:-10;trust:10,Maintain rates,economy:5;trust:-5
+card_010,14,true,environment,Dam Construction,A massive dam could power the kingdom.,Build dam,economy:20;environment:-15,Preserve river,environment:15;economy:-10

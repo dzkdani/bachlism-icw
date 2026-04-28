@@ -21,7 +21,7 @@ public class StatSystem
         Turn = 0;
     }
 
-    public void IncrementTurn()
+    public void AddTurn()
     {
         Turn++;
     }
@@ -57,11 +57,12 @@ public class StatSystem
 
     public bool IsLose()
     {
-        if (Corruption >= 100) return true;
-        if (Trust <= 0) return true;
-        if (Environment <= 0) return true;
-        if (Economy <= 0) return true;
-        else return false;
+        // if (Corruption >= 100) return true;
+        // if (Trust <= 0) return true;
+        // if (Environment <= 0) return true;
+        // if (Economy <= 0) return true;
+        // else 
+            return false;
     }
 
     public bool IsWin()

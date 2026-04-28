@@ -11,21 +11,17 @@ public class StatBar : MonoBehaviour
 
     void Awake()
     {
-        if (GetComponent<Image>() == null)
+        if (bar == null)
         {
-            Debug.LogError("StatBar requires an Image component.");
-            gameObject.AddComponent<Image>();
-        }
-        else
-        {
-            bar = GetComponent<Image>();
+            Debug.LogError("StatBar: Bar Image component is not assigned.");
         }
     }
     
     public void UpdateStat(float newValue)
     {
+        Debug.Log($"Updating {stat} bar: new value = {newValue}");
         finalValue = newValue / maxValue;
-        bar.fillAmount = Mathf.Clamp01(finalValue);
+        bar.DOFillAmount(Mathf.Clamp01(finalValue), 0.5f).SetEase(Ease.InOutQuad);
     }
 
 }

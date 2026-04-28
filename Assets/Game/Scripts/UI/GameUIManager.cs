@@ -16,7 +16,6 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI turnText;
 
     [SerializeField] private GameObject endGamePanel;
-    [SerializeField] private TextMeshProUGUI endGameMessageText;
     [SerializeField] private Button restartButton;
 
     private StatSystem statSystem;
@@ -28,6 +27,7 @@ public class GameUIManager : MonoBehaviour
             statSystem = GameController.Instance.StatSystem;
             if (statSystem != null)
             {
+                Debug.Log("Subscribing to stat changes for UI updates.");
                 statSystem.OnStatsChanged += UpdateStatsDisplay;
                 UpdateStatsDisplay();  // Initial display
             }
@@ -69,14 +69,6 @@ public class GameUIManager : MonoBehaviour
     {
         if (endGamePanel != null)
             endGamePanel.SetActive(true);
-
-        if (endGameMessageText != null)
-        {
-            if (statSystem.IsLose())
-                endGameMessageText.text = "GAME OVER!\nYou have failed to maintain the balance.";
-            else if (GameController.Instance.StatSystem.Turn >= GameController.Instance.TargetTurn)
-                endGameMessageText.text = "YOU WIN!\nYou successfully survived 100 turns!";
-        }
     }
 
     private void OnRestartClicked()

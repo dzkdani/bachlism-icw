@@ -27,6 +27,10 @@ Inspired by:
   - list of effected stats and amounts
 
 ## Game Loop:
+- using 2 active cards pipeline system:
+  - only show 1 card at a time, but have the next card ready to be shown after the player makes a choice on the current card
+  - when player makes a choice, apply the effects to the stats, then show the next card with the updated stats
+  - using object pooling system to manage the card gameobjects for better performance
 - deploy card decks
 - show card 
 - make choice

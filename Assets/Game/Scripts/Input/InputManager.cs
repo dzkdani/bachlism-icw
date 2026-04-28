@@ -18,7 +18,7 @@ public class InputManager : MonoBehaviour
 
     private Vector2 currentDragPos;
     private bool isDragging;
-    private InputHandler activeHandler;
+    [SerializeField] private InputHandler activeHandler;
     private DropZone currentZone = DropZone.None;
 
     // Canvas zones
@@ -67,7 +67,7 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
-        HandleTouchInput();
+        // HandleTouchInput();
         HandleMouseInput(); // For testing in the editor with mouse input
     }
 

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f252fa7bfd141b4d82df563bd42ae5b, type: 3}
+  m_Name: card_006
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: card_006
+  weight: 7
+  isCritical: 0
+  category: economy
+  title: Trade Agreement
+  desc: A neighboring kingdom proposes a trade agreement.
+  left:
+    desc: Sign deal
+    effects:
+    - stat: 1
+      amount: 15
+    - stat: 2
+      amount: 5
+  right:
+    desc: Reject deal
+    effects:
+    - stat: 1
+      amount: -5
+    - stat: 2
+      amount: -10

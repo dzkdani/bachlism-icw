@@ -1,11 +1,10 @@
-using System.Data.Common;
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 public class CardInfo : MonoBehaviour
 {
-    public Text titleText;
-    public Text descText;
+    public TextMeshProUGUI titleText;
+    public TextMeshProUGUI descText;
     
     private CardData cardData;
     public CardData CardData => cardData;

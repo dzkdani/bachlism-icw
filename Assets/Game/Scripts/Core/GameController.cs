@@ -1,4 +1,6 @@
 using UnityEngine;
+using System;
+using System.Collections;
 
 public enum GameState
 {
@@ -17,6 +19,9 @@ public class GameController : MonoBehaviour
     [SerializeField] private int targetTurn = 100;
     public int TargetTurn => targetTurn;
 
+    [SerializeField] private CardManager cardManager;
+    [SerializeField] private float delayBeforeDeploy = 0.5f;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -34,14 +39,35 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameState currentState;
     private StatSystem stat;
     public GameState CurrentState => currentState;
+    public StatSystem StatSystem => stat;
+
+    public event Action OnDrawCardRequested;
+    public event Action OnGameEnded;
 
 
     void Start()
     {
-        stat.OnStatsChanged += EvaluateGameState; 
+        if (cardManager == null)
+            cardManager = FindFirstObjectByType<CardManager>();
 
         stat = new StatSystem();
-        OnStartGame();       
+        stat.OnStatsChanged += EvaluateGameState;
+
+        if (cardManager != null)
+        {
+            StartCoroutine(InitializeGame());
+        }
+        else
+        {
+            Debug.LogError("CardManager not found! Cannot initialize game.");
+        }
+    }
+
+    private IEnumerator InitializeGame()
+    {
+        yield return new WaitForSeconds(delayBeforeDeploy);
+        cardManager.DeployCards();
+        OnStartGame();
     }
 
     void Update()
@@ -77,11 +103,17 @@ public class GameController : MonoBehaviour
 
         currentTurn = 0;
         currentState = GameState.Start;
+        
+        if (cardManager != null)
+        {
+            StartCoroutine(InitializeGame());
+        }
     }
 
     public void OnStartGame()
     {
-        currentState = GameState.Start;        
+        currentState = GameState.Start;
+        OnDrawCard();  // Start the game loop by drawing the first card
     }
 
     public void OnAwaitDecision()
@@ -93,7 +125,7 @@ public class GameController : MonoBehaviour
     {
         currentState = GameState.ApplyResult;
 
-        choice.Resolve(stat);
+        stat.ApplyEffect(choice.effects);
         currentTurn++;
 
         EvaluateGameState();
@@ -102,7 +134,7 @@ public class GameController : MonoBehaviour
     public void OnDrawCard()
     {
         currentState = GameState.DrawCard;
-        // Logic to draw a card and present it to the player would go here
+        OnDrawCardRequested?.Invoke();  // Notify CardManager to generate a card
     }
 
     public void EvaluateGameState()
@@ -113,14 +145,18 @@ public class GameController : MonoBehaviour
         {
             Debug.Log("Game Over!");
             currentState = GameState.End;
+            OnGameEnded?.Invoke();
         }
         else if (currentTurn >= targetTurn)
         {
             Debug.Log("You Survived 100 Turns! You Win!");
             currentState = GameState.End;
+            OnGameEnded?.Invoke();
         }
         else
         {
+            // Continue game loop
+            OnAwaitDecision();
             OnDrawCard();
         }
     }

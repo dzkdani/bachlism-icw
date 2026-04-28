@@ -178,6 +178,7 @@ GameObject:
   - component: {fileID: 315614649}
   - component: {fileID: 315614651}
   - component: {fileID: 315614650}
+  - component: {fileID: 315614652}
   m_Layer: 0
   m_Name: Stats (3)
   m_TagString: Untagged
@@ -242,6 +243,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 315614648}
   m_CullTransparentMesh: 1
+--- !u!114 &315614652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 315614648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04eafa3a80d5c804c8a89aebdb10978a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatBar
+  stat: 2
+  bar: {fileID: 0}
 --- !u!1 &802633973
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,6 +523,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1120151768}
+  - component: {fileID: 1120151769}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -530,6 +546,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2030405001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1120151769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120151767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caef452a0b5acd64880d1a18bfb2979d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameController
+  targetTurn: 100
+  cardManager: {fileID: 1978152860}
+  delayBeforeDeploy: 0.5
+  currentState: 0
 --- !u!1 &1281606933
 GameObject:
   m_ObjectHideFlags: 0
@@ -620,6 +652,7 @@ GameObject:
   - component: {fileID: 1617773312}
   - component: {fileID: 1617773314}
   - component: {fileID: 1617773313}
+  - component: {fileID: 1617773315}
   m_Layer: 0
   m_Name: Stats (2)
   m_TagString: Untagged
@@ -684,6 +717,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1617773311}
   m_CullTransparentMesh: 1
+--- !u!114 &1617773315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617773311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04eafa3a80d5c804c8a89aebdb10978a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatBar
+  stat: 1
+  bar: {fileID: 0}
 --- !u!1 &1629322158
 GameObject:
   m_ObjectHideFlags: 0
@@ -695,6 +742,7 @@ GameObject:
   - component: {fileID: 1629322159}
   - component: {fileID: 1629322161}
   - component: {fileID: 1629322160}
+  - component: {fileID: 1629322162}
   m_Layer: 0
   m_Name: Stats (1)
   m_TagString: Untagged
@@ -759,6 +807,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1629322158}
   m_CullTransparentMesh: 1
+--- !u!114 &1629322162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1629322158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04eafa3a80d5c804c8a89aebdb10978a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatBar
+  stat: 0
+  bar: {fileID: 0}
 --- !u!1 &1708744646
 GameObject:
   m_ObjectHideFlags: 0
@@ -871,8 +933,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1754546948}
+  - component: {fileID: 1754546949}
   m_Layer: 0
-  m_Name: StatManager
+  m_Name: GameUIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -893,6 +956,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2030405001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1754546949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1754546947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bb0ec73460e0c746ab60d2ca43ba400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameUIManager
+  environmentBar: {fileID: 1629322162}
+  economyBar: {fileID: 1617773315}
+  trustBar: {fileID: 315614652}
+  corruptionBar: {fileID: 2032578265}
+  turnText: {fileID: 0}
+  endGamePanel: {fileID: 0}
+  endGameMessageText: {fileID: 0}
+  restartButton: {fileID: 0}
 --- !u!1 &1942886106
 GameObject:
   m_ObjectHideFlags: 0
@@ -1146,7 +1229,7 @@ GameObject:
   - component: {fileID: 1978152859}
   - component: {fileID: 1978152860}
   m_Layer: 0
-  m_Name: DeckManager
+  m_Name: CardManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1184,7 +1267,7 @@ MonoBehaviour:
   cardAnimationDuration: 0.5
   delayBetweenCards: 0.2
   deployedCardCount: 10
-  deck: []
+  cardDatabase: {fileID: 0}
 --- !u!1 &2030405000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1231,6 +1314,7 @@ GameObject:
   - component: {fileID: 2032578262}
   - component: {fileID: 2032578264}
   - component: {fileID: 2032578263}
+  - component: {fileID: 2032578265}
   m_Layer: 0
   m_Name: Stats (4)
   m_TagString: Untagged
@@ -1295,6 +1379,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2032578261}
   m_CullTransparentMesh: 1
+--- !u!114 &2032578265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2032578261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04eafa3a80d5c804c8a89aebdb10978a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatBar
+  stat: 3
+  bar: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

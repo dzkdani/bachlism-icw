@@ -3,13 +3,28 @@ using System;
 
 public class StatSystem
 {
-    public float Environment = 0f;
-    public float Economy = 0f;
-    public float Trust = 0f;
-    public float Corruption = 0f;
-    public int Turn = 0;
+    public float Environment { get; private set; }
+    public float Economy { get; private set; }
+    public float Trust { get; private set; }
+    public float Corruption { get; private set; }
+    public int Turn { get; private set; }
 
     public event Action OnStatsChanged;
+
+    public StatSystem()
+    {
+        // Initialize with random values between 10-50 as per design
+        Environment = UnityEngine.Random.Range(10f, 51f);
+        Economy = UnityEngine.Random.Range(10f, 51f);
+        Trust = UnityEngine.Random.Range(10f, 51f);
+        Corruption = UnityEngine.Random.Range(10f, 51f);
+        Turn = 0;
+    }
+
+    public void IncrementTurn()
+    {
+        Turn++;
+    }
 
     public void ApplyEffect(Effect[] effects)
     {

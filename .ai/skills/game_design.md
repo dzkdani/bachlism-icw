@@ -7,7 +7,7 @@ Inspired by:
 ## Stats:
 - Environment
 - Economy
-- Public Trust
+- Trust
 - Corruption
 - base starting stats: random between 10 - 50
 
@@ -27,11 +27,13 @@ Inspired by:
   - list of effected stats and amounts
 
 ## Game Loop:
-- draw card
+- deploy card decks
+- show card 
 - make choice
 - resolve choice
-- update stats 
-- repeat
+- update stats
+- show new cards
+- make choice again
 
 ## Ending
 Game Over Conditions:
@@ -41,7 +43,7 @@ Game Over Conditions:
 - Economy <= 0
 
 Winning Conditions:
-- Survive for "100 hari kerja"
+- Survive for 100 game loop turns
 
 ## TBD
 Special Events:

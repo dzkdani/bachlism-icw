@@ -21,11 +21,14 @@ public class CardManager : MonoBehaviour
     void OnEnable()
     {
         InputManager.Instance.OnActiveDropped += OnDecisionMade;
+        GameController.Instance.OnDrawCardRequested += OnDrawCard;
     }
 
     void OnDisable()
     {
         InputManager.Instance.OnActiveDropped -= OnDecisionMade;
+        if (GameController.Instance != null)
+            GameController.Instance.OnDrawCardRequested -= OnDrawCard;
     }
 
     [Button("Deploy Cards")]
@@ -84,6 +87,11 @@ public class CardManager : MonoBehaviour
         else if (dropZone == InputManager.DropZone.Right)
             GameController.Instance.OnApplyResult(card.Right);
 
+        OnDrawCard();  // Generate next card for the game loop
+    }
+
+    public void OnDrawCard()
+    {
         GenerateNextCard();
     }
 
@@ -92,5 +100,19 @@ public class CardManager : MonoBehaviour
         GameObject cardInstance = ObjectPool.Get(cardPrefab, deckTarget);
         cardInstance.transform.localScale = Vector3.one;
         cardInstance.transform.position = deckTarget.position;
+        
+        // Initialize card with random data from database
+        if (cardDatabase != null)
+        {
+            CardInfo cardInfo = cardInstance.GetComponent<CardInfo>();
+            if (cardInfo != null)
+            {
+                CardData randomCard = cardDatabase.GetRandomCard();
+                if (randomCard != null)
+                {
+                    cardInfo.Initialize(randomCard);
+                }
+            }
+        }
     }
 }

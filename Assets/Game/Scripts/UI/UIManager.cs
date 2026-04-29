@@ -6,7 +6,7 @@ using TMPro;
 /// Manages the UI display for game stats and end-game screen.
 /// Integrates with StatBar components for animated stat visualization.
 /// </summary>
-public class GameUIManager : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
     [SerializeField] private StatBar environmentBar;
     [SerializeField] private StatBar economyBar;

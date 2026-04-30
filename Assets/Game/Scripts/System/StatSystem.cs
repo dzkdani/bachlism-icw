@@ -18,7 +18,7 @@ public class StatSystem
         Economy = UnityEngine.Random.Range(20f, 51f);
         Trust = 49f;
         Corruption = UnityEngine.Random.Range(20f, 51f);
-        Turn = 0;
+        Turn = 1;
     }
 
     public void AddTurn()

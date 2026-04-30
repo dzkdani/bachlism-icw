@@ -25,7 +25,8 @@ public class CardInfo : MonoBehaviour
         titleText.PlayTypewriter(cardData.title, 30f);
 
         defaultDesc = cardData.desc;
-        descText.PlayTypewriter(defaultDesc, 30f);
+        // descText.PlayTypewriter(defaultDesc, 30f);
+        descText.PlayTypewriterWithMark(defaultDesc, 30f);
 
         leftDecision = cardData.left;
         rightDecision = cardData.right;

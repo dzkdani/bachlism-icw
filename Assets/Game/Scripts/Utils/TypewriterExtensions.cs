@@ -45,6 +45,17 @@ public static class TypewriterExtensions
         tmpro.StartCoroutine(coroutine);
     }
 
+    public static void PlayTypewriterWithMark(this TextMeshProUGUI tmpro, string fullText, float charsPerSecond = 25f)
+    {
+        if (tmpro == null) return;
+        
+        tmpro.StopTypewriter();
+        tmpro.text = "";
+        
+        IEnumerator coroutine = TypewriterMarkCoroutine(tmpro, fullText, 1f / charsPerSecond);
+        tmpro.StartCoroutine(coroutine);
+    }
+
     /// <summary>
     /// Stops any active typewriter effect on this TextMeshPro component.
     /// </summary>
@@ -65,7 +76,20 @@ public static class TypewriterExtensions
         tmpro.text = fullText;
     }
 
+
     // ============ Private Coroutines ============
+    
+    /// Coroutine that types out text character by character with a <mark> effect.
+    private static IEnumerator TypewriterMarkCoroutine(TextMeshProUGUI tmpro, string fullText, float delay)
+    {
+        for (int i = 0; i < fullText.Length; i++)
+        {
+            string visible = fullText.Substring(0, i + 1);
+            tmpro.text = $"<mark=#00000088>{visible}</mark>";
+
+            yield return new WaitForSeconds(delay);
+        }
+    }
 
     /// <summary>
     /// Coroutine that types out text character by character based on characters per second.

@@ -19,7 +19,9 @@ public class GameController : MonoBehaviour
     public int TargetTurn => targetTurn;
 
     [SerializeField] private CardManager cardManager;
+    [SerializeField] private GoogleSheetLoader sheetLoader;
     [SerializeField] private float delayBeforeDeploy = 0.5f;
+    
 
     void Awake()
     {
@@ -31,7 +33,22 @@ public class GameController : MonoBehaviour
         else
         {
             Instance = this;
+            stat = new StatSystem();
         }
+    }
+
+    void Start()
+    {
+        if (cardManager == null)
+            cardManager = FindFirstObjectByType<CardManager>();
+
+        if (cardManager != null)
+        {
+            cardManager.OnAllCardsDeployed -= OnStartGame;
+            cardManager.OnAllCardsDeployed += OnStartGame;
+        }
+
+        stat.OnStatsChanged += OnResolve;
     }
 
     [SerializeField] private GameState currentState;
@@ -42,57 +59,40 @@ public class GameController : MonoBehaviour
     public event Action OnDrawCardRequested;
     public event Action OnGameEnded;
 
-    void Start()
+    public void BeginGame()
     {
         if (cardManager == null)
             cardManager = FindFirstObjectByType<CardManager>();
 
-        cardManager.OnAllCardsDeployed -= OnStartGame;
-        cardManager.OnAllCardsDeployed += OnStartGame;
+        if (sheetLoader == null)
+            sheetLoader = FindFirstObjectByType<GoogleSheetLoader>();
 
-        stat = new StatSystem();
-        stat.OnStatsChanged += OnResolve;
-
-        if (cardManager != null)
-        {
-            StartCoroutine(InitializeGame());
-        }
-        else
-        {
-            Debug.LogError("CardManager not found! Cannot initialize game.");
-        }
+        StartCoroutine(InitializeGame());
     }
 
     private IEnumerator InitializeGame()
     {
-        yield return new WaitForSeconds(delayBeforeDeploy);
-        cardManager.DeployCards();
-    }
+        // load cards from online sheet
+        if (sheetLoader != null)
+        {
+            yield return sheetLoader.LoadCards();
 
-    // void Update()
-    // {
-    //     switch (currentState)
-    //     {
-    //         case GameState.Start:
-    //             // Handle start logic if needed
-    //             break;
-    //         case GameState.DrawCard:
-    //             // Handle card drawing logic
-    //             break;
-    //         case GameState.AwaitDecision:
-    //             // Waiting for player input, no update logic needed here
-    //             break;
-    //         case GameState.ApplyResult:
-    //             // Results are applied immediately in OnApplyResult, so we can transition to the next state
-    //             break;
-    //         case GameState.CheckGameOver: 
-    //             // Check for game over or win conditions
-    //             break;
-    //         case GameState.End:
-    //             // Handle end game logic if needed
-    //             break;
-    //     }
-    // }
+            if (sheetLoader.RuntimeDatabase != null)
+            {
+                cardManager.SetCards(sheetLoader.RuntimeDatabase);
+            }
+            else
+            {
+                Debug.LogWarning("No online cards loaded. Using fallback.");
+            }
+        }
+
+        yield return new WaitForSeconds(delayBeforeDeploy);
+
+        cardManager.DeployCards();
+        
+        AudioManager.Instance.Play("BGM");
+    }
 
     public void OnNewGame()
     {
@@ -102,16 +102,12 @@ public class GameController : MonoBehaviour
 
         currentState = GameState.Start;
         
-        if (cardManager != null)
-        {
-            StartCoroutine(InitializeGame());
-        }
+        cardManager.DeployCards();
     }
 
     public void OnStartGame()
     {
-        currentState = GameState.Start;
-        OnDrawCard();
+        currentState = GameState.AwaitDecision;
     }
 
     public void OnAwaitDecision()

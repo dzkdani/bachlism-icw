@@ -28,10 +28,17 @@ public class StatSystem
 
     public void ApplyEffect(Effect[] effects)
     {
-        foreach (Effect changes in effects)
+        if (effects != null && effects.Length > 0)
         {
-            ModifyStat(changes.stat, changes.amount);
+            foreach (Effect changes in effects)
+            {
+                Debug.Log($"Applying effect: {changes.stat} change by {changes.amount}");
+                ModifyStat(changes.stat, changes.amount);
+            }
         }
+
+        // Always invoke after all effects are applied
+        OnStatsChanged?.Invoke();
     }
 
     private void ModifyStat(Stat type, float amount)
@@ -51,17 +58,15 @@ public class StatSystem
                 Corruption = Mathf.Clamp(Corruption + amount, 0f, 100f);
                 break;
         }
-
-        OnStatsChanged?.Invoke();
     }
 
     public bool IsLose()
     {
-        // if (Corruption >= 100) return true;
-        // if (Trust <= 0) return true;
-        // if (Environment <= 0) return true;
-        // if (Economy <= 0) return true;
-        // else 
+        if (Corruption >= 100) return true;
+        if (Trust <= 0) return true;
+        if (Environment <= 0) return true;
+        if (Economy <= 0) return true;
+        else 
             return false;
     }
 

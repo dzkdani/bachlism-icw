@@ -15,9 +15,6 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI turnText;
 
-    [SerializeField] private GameObject endGamePanel;
-    [SerializeField] private Button restartButton;
-
     private StatSystem statSystem;
 
     private void Start()
@@ -28,27 +25,22 @@ public class UIManager : MonoBehaviour
             if (statSystem != null)
             {
                 statSystem.OnStatsChanged += UpdateStatsDisplay;
-                UpdateStatsDisplay();  // Initial display
+                UpdateStatsDisplay();
             }
-
-            GameController.Instance.OnGameEnded += ShowEndGameScreen;
+            else
+            {
+                Debug.LogError("StatSystem instance is null in UIManager.");
+            }
         }
         else
         {
             Debug.LogError("GameController not found!");
         }
-
-        if (restartButton != null)
-            restartButton.onClick.AddListener(OnRestartClicked);
-
-        if (endGamePanel != null)
-            endGamePanel.SetActive(false);
     }
 
     private void UpdateStatsDisplay()
     {
         if (statSystem == null) return;
-
         // Update stat bars with animation
         if (environmentBar != null)
             environmentBar.UpdateStat(statSystem.Environment);
@@ -64,29 +56,10 @@ public class UIManager : MonoBehaviour
             turnText.text = $"Day: {GameController.Instance.StatSystem.Turn}";
     }
 
-    private void ShowEndGameScreen()
-    {
-        if (endGamePanel != null)
-            endGamePanel.SetActive(true);
-    }
-
-    private void OnRestartClicked()
-    {
-        if (endGamePanel != null)
-            endGamePanel.SetActive(false);
-
-        GameController.Instance.OnNewGame();
-    }
 
     private void OnDestroy()
     {
         if (statSystem != null)
             statSystem.OnStatsChanged -= UpdateStatsDisplay;
-
-        if (GameController.Instance != null)
-            GameController.Instance.OnGameEnded -= ShowEndGameScreen;
-
-        if (restartButton != null)
-            restartButton.onClick.RemoveListener(OnRestartClicked);
     }
 }

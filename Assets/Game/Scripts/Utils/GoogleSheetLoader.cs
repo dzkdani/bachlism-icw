@@ -7,7 +7,14 @@ public class GoogleSheetLoader : MonoBehaviour
 {
     [SerializeField] private string sheetUrl;
 
-    public List<CardData> LoadedCards { get; private set; }
+    private List<CardData> LoadedCards { get; set; }
+    public CardDatabase RuntimeDatabase { get; private set; }
+
+    [ContextMenu("Test Load Cards")]
+    public void TestLoadCards()
+    {
+        StartCoroutine(LoadCards());
+    }
 
     public IEnumerator LoadCards()
     {
@@ -25,6 +32,21 @@ public class GoogleSheetLoader : MonoBehaviour
 
         LoadedCards = RuntimeCardParser.Parse(csv);
 
-        Debug.Log($"Loaded {LoadedCards.Count} cards");
+        RuntimeDatabase = ScriptableObject.CreateInstance<CardDatabase>();
+        RuntimeDatabase.cards = LoadedCards;
+
+        DebugCards();
+    }
+
+    private void DebugCards()
+    {
+        Debug.Log($"Total cards loaded: {LoadedCards.Count}");
+
+        foreach (var card in LoadedCards)
+        {
+            Debug.Log(
+                $"ID:{card.id} | Title:{card.title} | Weight:{card.weight}"
+            );
+        }
     }
 }

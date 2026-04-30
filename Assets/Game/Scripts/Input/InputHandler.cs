@@ -55,6 +55,8 @@ public class InputHandler : MonoBehaviour
         }
 
         UpdateDrag(screenPos, InputManager.DropZone.None);
+
+        AudioManager.Instance.Play("swipe");
     }
 
     public void UpdateDrag(Vector2 currentPos, InputManager.DropZone zone)
@@ -132,6 +134,8 @@ public class InputHandler : MonoBehaviour
                 ReturnSequence().Play();
                 break;
         }
+
+        AudioManager.Instance.Play("drop");
     }
 
     public void CancelDrag()
@@ -141,6 +145,7 @@ public class InputHandler : MonoBehaviour
 
         isActiveDrag = false;
         ReturnSequence().Play();
+        AudioManager.Instance.Play("drop");
     }
 
     public Sequence ChooseSequence()
@@ -161,7 +166,7 @@ public class InputHandler : MonoBehaviour
         {
             ResetCardVisualState();
         });
-
+        
         return sequence;
     }
 

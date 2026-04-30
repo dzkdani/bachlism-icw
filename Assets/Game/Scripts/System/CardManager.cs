@@ -1,12 +1,9 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-using NaughtyAttributes;
 using System.Linq;
-using System.Threading.Tasks;
 
 public class CardManager : MonoBehaviour
 {
@@ -25,14 +22,33 @@ public class CardManager : MonoBehaviour
 
     void OnEnable()
     {
-        InputManager.Instance.OnActiveDropped += OnDecisionMade;
-        GameController.Instance.OnDrawCardRequested += TransitionToNextCard;
+        if (InputManager.Instance != null)
+            InputManager.Instance.OnActiveDropped += OnDecisionMade;
+        else
+            Debug.LogWarning("InputManager instance not found. Decision making will not work.");
+
+        if (GameController.Instance != null)
+            GameController.Instance.OnDrawCardRequested += TransitionToNextCard;
+        else
+            Debug.LogWarning("GameController instance not found. Card transitions will not work.");
     }
 
     void OnDisable()
     {
-        InputManager.Instance.OnActiveDropped -= OnDecisionMade;
-        GameController.Instance.OnDrawCardRequested -= TransitionToNextCard;
+        if (InputManager.Instance != null)
+            InputManager.Instance.OnActiveDropped -= OnDecisionMade;
+        else
+            Debug.LogWarning("InputManager instance not found. Could not unbind decision making.");
+
+        if (GameController.Instance != null)
+            GameController.Instance.OnDrawCardRequested -= TransitionToNextCard;
+        else
+            Debug.LogWarning("GameController instance not found. Could not unbind card transitions.");
+    }
+
+    public void SetCards(CardDatabase database)
+    {
+        cardDatabase = database;
     }
 
     // [Button("Deploy Cards")]
@@ -55,6 +71,7 @@ public class CardManager : MonoBehaviour
             Sequence cardSequence = DOTween.Sequence();
             
             cardSequence.AppendInterval(delayTime);
+            cardSequence.AppendCallback(() => AudioManager.Instance.Play("draw"));
             cardSequence.Append(cardInstance.transform.DOMove(deckTarget.position, cardAnimationDuration)
                 .SetEase(Ease.InOutQuad));
 
@@ -89,6 +106,14 @@ public class CardManager : MonoBehaviour
         CardInfo card = dropObj.GetComponent<CardInfo>();
         if (card == null)
             return;
+
+        // Block further input via CanvasGroup instead of isResolving
+        CanvasGroup cg = currentCard.GetComponent<CanvasGroup>();
+        if (cg != null)
+        {
+            cg.interactable = false;
+            cg.blocksRaycasts = false;
+        }
         
         if (dropZone == InputManager.DropZone.Left)
             GameController.Instance.OnApplyResult(card.Left);
@@ -125,6 +150,9 @@ public class CardManager : MonoBehaviour
     /// </summary>
     private void TransitionToNextCard()
     {
+        if (isResolving)
+            return;
+
         isResolving = true;
         StartCoroutine(CardTransition());
     }
@@ -134,7 +162,7 @@ public class CardManager : MonoBehaviour
         if (nextCard == null)
         {
             isResolving = false;
-            yield break; // No next card ready, should not happen if pipeline is maintained
+            yield break;
         }
 
         GameObject oldCurrent = currentCard;

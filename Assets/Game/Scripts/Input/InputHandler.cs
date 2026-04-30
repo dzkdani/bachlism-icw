@@ -15,11 +15,15 @@ public class InputHandler : MonoBehaviour
     private bool isActiveDrag;
     private float canvasHalfWidth;
 
+    private CardInfo cardInfo;
+    private InputManager.DropZone currentZone = InputManager.DropZone.None;
+
 
     private void Awake()
     {
         cardRect = GetComponent<RectTransform>();
         cardCanvasGroup = GetComponent<CanvasGroup>();
+        cardInfo = GetComponent<CardInfo>();
     }
 
     private void OnEnable()
@@ -90,6 +94,24 @@ public class InputHandler : MonoBehaviour
                 break;
         }
 
+        if (zone != currentZone)
+        {
+            currentZone = zone;
+
+            switch (zone)
+            {
+                case InputManager.DropZone.Left:
+                    cardInfo?.ShowLeftDecision();
+                    break;
+                case InputManager.DropZone.Right:
+                    cardInfo?.ShowRightDecision();
+                    break;
+                case InputManager.DropZone.None:
+                    cardInfo?.ShowDefaultText();
+                    break;
+            }
+        }
+
         cardRect.localRotation = Quaternion.Euler(0f, 0f, targetRotation);
     }
 
@@ -121,20 +143,20 @@ public class InputHandler : MonoBehaviour
         ReturnSequence().Play();
     }
 
-    private Sequence ChooseSequence()
+    public Sequence ChooseSequence()
     {
         Sequence sequence = DOTween.Sequence();
 
         if (cardCanvasGroup != null)
         {
-            sequence.Append(cardCanvasGroup.DOFade(0f, 0.25f).SetEase(Ease.OutCubic));
+            sequence.Append(cardCanvasGroup.DOFade(0f, 0.5f).SetEase(Ease.OutCubic));
         }
         else
         {
-            sequence.AppendInterval(0.25f);
+            sequence.AppendInterval(0.5f);
         }
 
-        sequence.Join(cardRect.DOScale(Vector3.one, 0.25f).SetEase(Ease.OutCubic));
+        sequence.Join(cardRect.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutCubic));
         sequence.OnComplete(() =>
         {
             ResetCardVisualState();
@@ -143,7 +165,7 @@ public class InputHandler : MonoBehaviour
         return sequence;
     }
 
-    private Sequence ReturnSequence()
+    public Sequence ReturnSequence()
     {
         Sequence sequence = DOTween.Sequence();
         sequence.Append(cardRect.DOAnchorPos(originalPosition, returnDuration).SetEase(Ease.OutCubic));

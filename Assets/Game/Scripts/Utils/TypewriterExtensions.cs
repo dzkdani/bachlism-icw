@@ -8,6 +8,9 @@ using UnityEngine;
 /// </summary>
 public static class TypewriterExtensions
 {
+    private const string TypewriterCoroutineKey = "TypewriterCoroutine_";
+    private const string TypewriterDelayCoroutineKey = "TypewriterDelayCoroutine_";
+
     /// <summary>
     /// Plays a typewriter effect on the TextMeshPro component.
     /// </summary>
@@ -19,7 +22,10 @@ public static class TypewriterExtensions
         if (tmpro == null) return;
         
         tmpro.StopTypewriter();
-        tmpro.StartCoroutine(TypewriterCoroutine(tmpro, fullText, charsPerSecond));
+        tmpro.text = "";
+        
+        IEnumerator coroutine = TypewriterCoroutine(tmpro, fullText, charsPerSecond);
+        tmpro.StartCoroutine(coroutine);
     }
 
     /// <summary>
@@ -33,7 +39,10 @@ public static class TypewriterExtensions
         if (tmpro == null) return;
         
         tmpro.StopTypewriter();
-        tmpro.StartCoroutine(TypewriterDelayCoroutine(tmpro, fullText, charDelaySeconds));
+        tmpro.text = "";
+        
+        IEnumerator coroutine = TypewriterDelayCoroutine(tmpro, fullText, charDelaySeconds);
+        tmpro.StartCoroutine(coroutine);
     }
 
     /// <summary>
@@ -42,8 +51,7 @@ public static class TypewriterExtensions
     public static void StopTypewriter(this TextMeshProUGUI tmpro)
     {
         if (tmpro == null) return;
-        tmpro.StopCoroutine(nameof(TypewriterCoroutine));
-        tmpro.StopCoroutine(nameof(TypewriterDelayCoroutine));
+        tmpro.StopAllCoroutines();
     }
 
     /// <summary>

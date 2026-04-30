@@ -27,7 +27,6 @@ public class UIManager : MonoBehaviour
             statSystem = GameController.Instance.StatSystem;
             if (statSystem != null)
             {
-                Debug.Log("Subscribing to stat changes for UI updates.");
                 statSystem.OnStatsChanged += UpdateStatsDisplay;
                 UpdateStatsDisplay();  // Initial display
             }
@@ -62,7 +61,7 @@ public class UIManager : MonoBehaviour
 
         // Update turn counter
         if (turnText != null)
-            turnText.text = $"Turn: {GameController.Instance.StatSystem.Turn} / {GameController.Instance.TargetTurn}";
+            turnText.text = $"Day: {GameController.Instance.StatSystem.Turn}";
     }
 
     private void ShowEndGameScreen()

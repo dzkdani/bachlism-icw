@@ -19,7 +19,6 @@ public class StatBar : MonoBehaviour
     
     public void UpdateStat(float newValue)
     {
-        Debug.Log($"Updating {stat} bar: new value = {newValue}");
         finalValue = newValue / maxValue;
         bar.DOFillAmount(Mathf.Clamp01(finalValue), 0.5f).SetEase(Ease.InOutQuad);
     }

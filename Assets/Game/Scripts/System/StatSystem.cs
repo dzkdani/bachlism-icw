@@ -13,11 +13,11 @@ public class StatSystem
 
     public StatSystem()
     {
-        // Initialize with random values between 10-50 as per design
-        Environment = UnityEngine.Random.Range(10f, 51f);
-        Economy = UnityEngine.Random.Range(10f, 51f);
-        Trust = UnityEngine.Random.Range(10f, 51f);
-        Corruption = UnityEngine.Random.Range(10f, 51f);
+        // Initialize with random values between 20-50 as per design
+        Environment = UnityEngine.Random.Range(20f, 51f);
+        Economy = UnityEngine.Random.Range(20f, 51f);
+        Trust = 49f;
+        Corruption = UnityEngine.Random.Range(20f, 51f);
         Turn = 0;
     }
 

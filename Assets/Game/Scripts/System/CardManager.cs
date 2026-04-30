@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using NaughtyAttributes;
 using System.Linq;
+using System.Threading.Tasks;
 
 public class CardManager : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class CardManager : MonoBehaviour
 
     [SerializeField] private GameObject currentCard;
     [SerializeField] private GameObject nextCard;
+    [SerializeField] private bool isResolving;
+
     public event Action OnAllCardsDeployed;
 
     void OnEnable()
@@ -32,7 +35,7 @@ public class CardManager : MonoBehaviour
         GameController.Instance.OnDrawCardRequested -= TransitionToNextCard;
     }
 
-    [Button("Deploy Cards")]
+    // [Button("Deploy Cards")]
     public void DeployCards()
     {
         // Pre-populate the object pool with cards
@@ -76,7 +79,6 @@ public class CardManager : MonoBehaviour
         }
     }
 
-    private bool isResolving;
     private void OnDecisionMade(InputHandler dropObj, InputManager.DropZone dropZone)
     {
         if (isResolving)
@@ -123,25 +125,34 @@ public class CardManager : MonoBehaviour
     /// </summary>
     private void TransitionToNextCard()
     {
+        isResolving = true;
+        StartCoroutine(CardTransition());
+    }
+
+    private IEnumerator CardTransition()
+    {
         if (nextCard == null)
-            return;
+        {
+            isResolving = false;
+            yield break; // No next card ready, should not happen if pipeline is maintained
+        }
 
         GameObject oldCurrent = currentCard;
+        InputHandler oldInput = oldCurrent.GetComponent<InputHandler>();
 
         currentCard = nextCard;
         nextCard = null;
 
+        yield return oldInput.ChooseSequence().WaitForCompletion();
+
         ShowCurrentCard();
+
+        yield return null;
 
         ObjectPool.Return(oldCurrent);
 
-        StartCoroutine(PrepareNextFrame());
-    }
-
-    private IEnumerator PrepareNextFrame()
-    {
-        yield return null;
         PrepareNextCard();
+        
         isResolving = false;
     }
 
@@ -156,7 +167,7 @@ public class CardManager : MonoBehaviour
             CanvasGroup cg = currentCard.GetComponent<CanvasGroup>();
             cg.interactable = true;
             cg.blocksRaycasts = true;
-            currentCard.transform.SetAsLastSibling(); // Ensure it appears above the next card
+            currentCard.transform.SetAsLastSibling(); 
         }
     }
 

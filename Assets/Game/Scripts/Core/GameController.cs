@@ -49,6 +49,9 @@ public class GameController : MonoBehaviour
         }
 
         stat.OnStatsChanged += OnResolve;
+
+        if (stat.HasSave()) 
+            stat.Load(); 
     }
 
     [SerializeField] private GameState currentState;

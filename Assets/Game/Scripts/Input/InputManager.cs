@@ -235,6 +235,15 @@ public class InputManager : MonoBehaviour
         return DropZone.None;
     }
 
+    /// <summary>
+    /// Programmatically sets the active input handler (card) for accessibility navigation.
+    /// </summary>
+    public void SetFocus(InputHandler handler)
+    {
+        activeHandler = handler;
+        // Optionally trigger focus sound or UI highlight here
+    }
+
     public bool IsDragging => isDragging;
     public InputHandler ActiveHandler => activeHandler;
     public DropZone CurrentZone => currentZone;

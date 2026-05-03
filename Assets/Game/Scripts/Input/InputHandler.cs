@@ -202,6 +202,16 @@ public class InputHandler : MonoBehaviour
         cardCanvasGroup.blocksRaycasts = true;
     }
 
+    public void ReadCard()
+    {
+        var cardInfo = GetComponent<CardInfo>();
+        if (cardInfo != null)
+        {
+            string text = cardInfo.GetAccessibilityText();
+            AccessibilityManager.Instance?.Announce(text);
+        }
+    }
+
     private void KillTweens()
     {
         if (cardRect != null)
